@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 const axios = require('axios');
 const JSON_SERVER_URL = 'http://localhost:3001';
 
-function createUser(username, password) {
+async function createUser(username, password) {
     return axios.post(`${JSON_SERVER_URL}/users`, { username, password })
         .then(response => response.data);
 }
