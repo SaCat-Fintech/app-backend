@@ -106,4 +106,9 @@ export class AuthController {
             throw new BadRequestException('No se pudo verificar el email: ' + error.message);
         }
     }
+
+    @Get('secret')
+    async secret() {
+        return "Top secret";
+    }
 }
