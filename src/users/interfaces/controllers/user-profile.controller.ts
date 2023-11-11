@@ -4,7 +4,7 @@ import { UserProfileService } from "../../infrastructure/services/user-profile.s
 import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { CreateUserProfileDto, UpdateUserProfileDto } from "../../domain/dto/user-profile.dto";
 
-@ApiTags('user-profiles')
+@ApiTags('user-profile')
 @Controller('user-profile')
 export class UserProfileController {
     constructor(private readonly userProfileService: UserProfileService) {}
@@ -22,7 +22,7 @@ export class UserProfileController {
 
     @Post()
     @ApiBody({ type: CreateUserProfileDto })
-    @ApiResponse({ status: 201, type: UserProfile, description: 'Create user profile.'})
+    @ApiResponse({ status: 201, /*type: UserProfile,*/ description: 'Create user profile.'})
     async create(@Body() userProfileData: CreateUserProfileDto): Promise<UserProfile> {
         return await this.userProfileService.create(userProfileData);
     }

@@ -21,8 +21,9 @@ async function bootstrap() {
       .setDescription('NestJS Firebase Auth')
       .setVersion('1.0')
       .addTag('NestJS Firebase Auth')
-      .addTag('roles')
-      .addTag('user-profiles')
+      .addTag('auth')
+      .addTag('role')
+      .addTag('user-profile')
       .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
