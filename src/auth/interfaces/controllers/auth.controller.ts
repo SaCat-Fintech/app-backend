@@ -4,7 +4,7 @@ import {
     Controller,
     Get,
     HttpCode,
-    HttpStatus,
+    HttpStatus, Param,
     Post, Put,
     Req,
     Request, Res,
@@ -12,36 +12,38 @@ import {
     UseGuards
 } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import {AuthGuard} from './auth.guard';
-import {AuthService} from './auth.service';
+import {AuthGuard} from '../../auth.guard';
+import {AuthService} from '../../infrastructure/services/auth.service';
 import {auth} from "firebase-admin";
 import UserRecord = auth.UserRecord;
 import ListUsersResult = auth.ListUsersResult;
+import {ApiBody, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {User} from "../../../users/domain/entities/user.entity";
+import {CreateUserDto, UpdateUserDto} from "../../../users/domain/dto/user.dto";
 
-export class CreateUserDto {
-    email: string;
-    password: string;
-}
-export class UpdateUserDto {
-    uid: string;
-    email: string;
-    password: string;
-}
-// login.dto.ts
-export class LoginDto {
-    email: string;
-    password: string;
-}
-
-
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(private readonly authService: AuthService) {}
 
+    /*
     @HttpCode(HttpStatus.OK)
+    @ApiBody({ type: CreateUserDto})
     @Post('login')
     signIn(@Body() signInDto: Record<string, any>) {
         return this.authService.signIn(signInDto.username, signInDto.password);
+    }
+    */
+    @Get()
+    @ApiResponse({ status: 200, type: [User], description: 'Get all users.'})
+    async findAll(): Promise<User[]> {
+        return await this.authService.findAll();
+    }
+
+    @Get(':id')
+    @ApiResponse({ status: 200, type: User, description: 'Get user by id.'})
+    async findOne(@Param('id') id: number): Promise<User> {
+        return await this.authService.findOne(id);
     }
 
     @UseGuards(AuthGuard)
@@ -60,15 +62,10 @@ export class AuthController {
         }
     }
     @Post('register')
-    async createUser(@Body() userData: CreateUserDto): Promise<UserRecord> {
-        try {
-            return await admin.auth().createUser({
-                email: userData.email,
-                password: userData.password,
-            });
-        } catch (error) {
-            throw new BadRequestException('No se pudo crear el usuario: ' + error.message);
-        }
+    @ApiBody({ type: CreateUserDto })
+    @ApiResponse({ status: 201, type: User, description: 'Create user.'})
+    async createUser(@Body() userData: CreateUserDto): Promise<User> {
+        return await this.authService.create(userData);
     }
     @Get('listUsers')
     async listUsers(): Promise<ListUsersResult> {
@@ -87,6 +84,7 @@ export class AuthController {
             throw new BadRequestException('' + error.message);
         }
     }
+    /*
     @Put('updateUser')
     async updateUser(@Body() userData: UpdateUserDto): Promise<UserRecord> {
         try {
@@ -98,6 +96,7 @@ export class AuthController {
             throw new BadRequestException('No se pudo actualizar el usuario: ' + error.message);
         }
     }
+    */
     @Post('verifyEmail')
     async verifyEmail(@Body() userData: UpdateUserDto): Promise<string> {
         try {
