@@ -1,9 +1,8 @@
 import {Body, Controller, Get, Param, Post, Put} from "@nestjs/common";
 import {RoleService} from "../../infrastructure/services/role.service";
 import {Role} from "../../domain/entities/role.entity";
-import {CreateRoleDto} from "../../domain/dto/create-role.dto";
 import {ApiBody, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {UpdateRoleDto} from "../../domain/dto/update-role.dto";
+import {CreateRoleDto, UpdateRoleDto} from "../../domain/dto/role.dto";
 
 @ApiTags('roles')
 @Controller('role')
