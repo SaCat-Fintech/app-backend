@@ -11,6 +11,8 @@ import {FirebaseAuthMiddleware} from "../../../middleware/firebase.auth.middlewa
     controllers: [UserController],
     exports: [TypeOrmModule],
 })
+export class UserModule {}
+/*
 export class UserModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
@@ -19,3 +21,4 @@ export class UserModule implements NestModule {
             .forRoutes(UserController);
     }
 }
+*/
