@@ -1,14 +1,20 @@
-import {Injectable, NotFoundException} from "@nestjs/common";
+import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {UserProfile} from "../../domain/entities/user-profile.entity";
 import {Repository} from "typeorm";
 import {CreateUserProfileDto, UpdateUserProfileDto} from "../../domain/dto/user-profile.dto";
+import {User} from "../../domain/entities/user.entity";
+import {Role} from "../../domain/entities/role.entity";
 
 @Injectable()
 export class UserProfileService {
     constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
         @InjectRepository(UserProfile)
         private readonly userProfileRepository: Repository<UserProfile>,
+        @InjectRepository(Role)
+        private readonly roleRepository: Repository<Role>,
     ) {}
     async findAll(): Promise<UserProfile[]> {
         return await this.userProfileRepository.find({ order: { id: 'ASC' } });
@@ -21,24 +27,67 @@ export class UserProfileService {
         return userProfile;
     }
     async create(newUserProfile: CreateUserProfileDto): Promise<UserProfile> {
+        const userId = newUserProfile.user_id;
+
         try {
-            return await this.userProfileRepository.save(newUserProfile);
+            const existingProfile = await this.userProfileRepository.findOne({ where: { user: { id: userId } } });
+            if (existingProfile) {
+                throw new BadRequestException(`Ya existe un perfil para el usuario con ID ${userId}.`);
+            }
+
+            const user = await this.userRepository.findOne({ where: { id: userId } });
+            if (!user) {
+                throw new NotFoundException(`No se encontró un usuario con ID ${userId}.`);
+            }
+
+            const newProfile = this.userProfileRepository.create(newUserProfile);
+            newProfile.user = user;
+
+            if (newUserProfile.role_ids && newUserProfile.role_ids.length > 0) {
+                const roles = await this.roleRepository.findByIds(newUserProfile.role_ids);
+                if (roles.length !== newUserProfile.role_ids.length) {
+                    throw new NotFoundException('Uno o más roles proporcionados no fueron encontrados.');
+                }
+                newProfile.roles = roles;
+            }
+
+            return await this.userProfileRepository.save(newProfile);
         } catch (error) {
-            throw error;
+            if (error instanceof NotFoundException) {
+                throw new NotFoundException('Usuario no encontrado');
+            } else if (error instanceof BadRequestException) {
+                throw error;
+            } else {
+                throw new Error('Ocurrió un error durante la creación del perfil.');
+            }
         }
     }
+
+
+
     async update(id: number, updateUserProfile: UpdateUserProfileDto): Promise<UserProfile> {
-        const existingUserProfile = await this.userProfileRepository.findOne({where: {id}});
+        const existingUserProfile = await this.userProfileRepository.findOne({ where: { id } });
 
         if (!existingUserProfile) {
-            throw new NotFoundException(`The user profile with ID ${id} was not found.`);
+            throw new NotFoundException(`El perfil de usuario con ID ${id} no fue encontrado.`);
         }
+
         existingUserProfile.dni = updateUserProfile.dni || existingUserProfile.dni;
         existingUserProfile.first_name = updateUserProfile.first_name || existingUserProfile.first_name;
         existingUserProfile.last_name = updateUserProfile.last_name || existingUserProfile.last_name;
         existingUserProfile.phone_number = updateUserProfile.phone_number || existingUserProfile.phone_number;
+
+        if (updateUserProfile.role_ids && updateUserProfile.role_ids.length > 0) {
+            const roles = await this.roleRepository.findByIds(updateUserProfile.role_ids);
+            if (roles.length !== updateUserProfile.role_ids.length) {
+                throw new NotFoundException('Uno o más roles proporcionados no fueron encontrados.');
+            }
+            existingUserProfile.roles = roles;
+        }
+
         return await this.userProfileRepository.save(existingUserProfile);
     }
+
     async delete(id: number): Promise<String> {
         const userProfile = await this.userProfileRepository.findOne({where: {id}});
 

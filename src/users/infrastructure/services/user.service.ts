@@ -23,12 +23,13 @@ export class UserService {
     }
     async create(newUser: CreateUserDto): Promise<User> {
         try {
-            await admin.auth().createUser({
+            const firebaseUser = await admin.auth().createUser({
                 email: newUser.email,
                 password: newUser.password,
             });
             const user = this.userRepository.create(newUser);
             user.password = newUser.password;
+            user.firebase_uid = firebaseUser.uid;
             return await this.userRepository.save(user).then((user) => {
                 delete user.password;
                 return user;

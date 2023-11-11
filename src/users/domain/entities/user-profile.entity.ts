@@ -1,4 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    OneToOne,
+    JoinColumn,
+    ManyToMany,
+    JoinTable,
+    BeforeInsert
+} from 'typeorm';
 import { User } from "./user.entity";
 import { Role } from "./role.entity";
 import {ApiProperty} from "@nestjs/swagger";
@@ -32,17 +41,8 @@ export class UserProfile {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     updated_at: Date;
 
-    @ApiProperty()
-    @Column({ type: 'varchar', length: 32, nullable: true })
-    firebase_uid: string;
-
-    @ApiProperty()
-    @Column({ type: 'int', nullable: false })
-    user_id: number;
-
-    @ApiProperty()
-    @OneToOne(() => User, { eager: true })
-    @JoinColumn({ name: 'user_id' })
+    @OneToOne(() => User, user => user.userProfile, { eager: true })
+    @JoinColumn({ name: 'user_id'})
     user: User;
 
     @ManyToMany(() => Role, (role) => role.userProfiles, { eager: true })
