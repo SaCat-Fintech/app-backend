@@ -8,10 +8,10 @@ export class FirebaseAuthMiddleware implements NestMiddleware {
         const idToken = req.headers.authorization;
 
         if (!idToken) {
-            throw new UnauthorizedException('Unauthorized: Missing token');
+            throw new UnauthorizedException('Missing token');
         }
         try {
-            //req['user'] = await admin.auth().verifyIdToken(idToken);
+            req['user'] = await admin.auth().verifyIdToken(idToken);
             next();
         } catch (error) {
             throw new UnauthorizedException(error.message);
