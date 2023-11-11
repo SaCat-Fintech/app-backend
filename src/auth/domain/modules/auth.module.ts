@@ -1,6 +1,5 @@
 import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import { AuthService } from '../../infrastructure/services/auth.service';
-import { UsersModule } from '../../../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from '../../interfaces/controllers/auth.controller';
 import { jwtConstants } from '../../constants';

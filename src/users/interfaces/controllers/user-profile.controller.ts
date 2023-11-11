@@ -5,7 +5,7 @@ import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { CreateUserProfileDto, UpdateUserProfileDto } from "../../domain/dto/user-profile.dto";
 
 @ApiTags('user-profile')
-@Controller('user-profile')
+@Controller('user-profiles')
 export class UserProfileController {
     constructor(private readonly userProfileService: UserProfileService) {}
     @Get()
