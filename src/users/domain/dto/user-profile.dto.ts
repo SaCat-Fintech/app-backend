@@ -24,11 +24,6 @@ export class CreateUserProfileDto {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsString()
-    role: string;
-
-    @ApiProperty()
-    @IsNotEmpty()
     @IsNumber()
     user_id: number;
 }
