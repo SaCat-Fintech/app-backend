@@ -43,6 +43,7 @@ export class RoleService {
 
         return await this.roleRepository.save(existingRole);
     }
+    //TODO: check remove
     async delete(id: number): Promise<String> {
         const role = await this.roleRepository.findOne({where: {id}});
 

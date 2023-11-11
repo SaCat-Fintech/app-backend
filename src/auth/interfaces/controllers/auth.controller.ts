@@ -34,17 +34,6 @@ export class AuthController {
         return this.authService.signIn(signInDto.username, signInDto.password);
     }
     */
-    @Get()
-    @ApiResponse({ status: 200, type: [User], description: 'Get all users.'})
-    async findAll(): Promise<User[]> {
-        return await this.authService.findAll();
-    }
-
-    @Get(':id')
-    @ApiResponse({ status: 200, type: User, description: 'Get user by id.'})
-    async findOne(@Param('id') id: number): Promise<User> {
-        return await this.authService.findOne(id);
-    }
 
     @UseGuards(AuthGuard)
     @Get('profile')
@@ -60,12 +49,6 @@ export class AuthController {
         } catch (error) {
             throw new UnauthorizedException('Token no válido');
         }
-    }
-    @Post('register')
-    @ApiBody({ type: CreateUserDto })
-    @ApiResponse({ status: 201, type: User, description: 'Create user.'})
-    async createUser(@Body() userData: CreateUserDto): Promise<User> {
-        return await this.authService.create(userData);
     }
     @Get('listUsers')
     async listUsers(): Promise<ListUsersResult> {
@@ -84,6 +67,7 @@ export class AuthController {
             throw new BadRequestException('' + error.message);
         }
     }
+
     /*
     @Put('updateUser')
     async updateUser(@Body() userData: UpdateUserDto): Promise<UserRecord> {
