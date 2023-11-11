@@ -10,7 +10,7 @@ export class CreateUserDto {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    password_hash: string;
+    password: string;
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {}
