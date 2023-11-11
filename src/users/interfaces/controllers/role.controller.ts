@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { RoleService } from "../../infrastructure/services/role.service";
 import { Role } from "../../domain/entities/role.entity";
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { CreateRoleDto, UpdateRoleDto } from "../../domain/dto/role.dto";
 
 @ApiTags('role')
+//@ApiBearerAuth()
 @Controller('roles')
 export class RoleController {
     constructor(private readonly roleService: RoleService) {}

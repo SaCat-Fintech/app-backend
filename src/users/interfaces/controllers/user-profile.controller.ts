@@ -1,10 +1,11 @@
-import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
 import { UserProfileService } from "../../infrastructure/services/user-profile.service";
 import { UserProfile } from "../../domain/entities/user-profile.entity";
 import { CreateUserProfileDto, UpdateUserProfileDto } from "../../domain/dto/user-profile.dto";
 
 @ApiTags('user-profile')
+//@ApiBearerAuth()
 @Controller('user-profiles')
 export class UserProfileController {
     constructor(private readonly userProfileService: UserProfileService) {}

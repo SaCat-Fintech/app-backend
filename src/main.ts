@@ -25,6 +25,7 @@ async function bootstrap() {
       .addTag('user')
       .addTag('role')
       .addTag('user-profile')
+      .addBearerAuth()
       .build();
   app.setGlobalPrefix('api/v1');
   const document = SwaggerModule.createDocument(app, config);
