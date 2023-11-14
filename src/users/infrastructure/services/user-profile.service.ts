@@ -1,10 +1,10 @@
-import {BadRequestException, Injectable, NotFoundException} from "@nestjs/common";
-import {InjectRepository} from "@nestjs/typeorm";
-import {UserProfile} from "../../domain/entities/user-profile.entity";
-import {Repository} from "typeorm";
-import {CreateUserProfileDto, UpdateUserProfileDto} from "../../domain/dto/user-profile.dto";
-import {User} from "../../domain/entities/user.entity";
-import {Role} from "../../domain/entities/role.entity";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { CreateUserProfileDto, UpdateUserProfileDto } from "../../domain/dto/user-profile.dto";
+import { Role } from "../../domain/entities/role.entity";
+import { UserProfile } from "../../domain/entities/user-profile.entity";
+import { User } from "../../domain/entities/user.entity";
 
 @Injectable()
 export class UserProfileService {
@@ -53,6 +53,7 @@ export class UserProfileService {
 
             return await this.userProfileRepository.save(newProfile);
         } catch (error) {
+            console.log(error)
             if (error instanceof NotFoundException) {
                 throw new NotFoundException('Usuario no encontrado');
             } else if (error instanceof BadRequestException) {
