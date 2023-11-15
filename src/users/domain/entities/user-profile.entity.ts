@@ -32,8 +32,8 @@ export class UserProfile {
     last_name: string;
 
     @ApiProperty()
-    @Column({ type: 'varchar', length: 32, nullable: true })
-    phone_number: string;
+    @Column({ type: 'timestamp' })
+    birthdate: Date;
 
     @ApiProperty()
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
