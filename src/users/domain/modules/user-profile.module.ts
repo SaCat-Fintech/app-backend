@@ -7,6 +7,7 @@ import { User } from "../entities/user.entity";
 import { Role } from "../entities/role.entity";
 import { FirebaseAuthMiddleware } from "../../../middleware/firebase.auth.middleware";
 import { RoleController } from "../../interfaces/controllers/role.controller";
+import {UserModule} from "./user.module";
 
 @Module({
     imports: [TypeOrmModule.forFeature([User, Role, UserProfile])],
