@@ -1,6 +1,30 @@
 import { FrenchFee } from "src/french-fee/domain/entities/french-fee.entity";
 
 
+// types
+
+type CuotaType = {
+    NC: number; // Número de cuota
+    PG: string; // Periodo de gracia
+    SICF: number; // Saldo Inicial Cuota Final
+    ICF: number; // Interes Cuota Final
+    ACF: number; // Amortización Cuota Final
+    SegDesCF: number; // Seguro Desgravamen Cuota Final
+    SFCF: number; // Saldo Final Cuota Final
+    SI: number; // Saldo Inicial Cuota
+    I: number; // Interes
+    Cuota: number; // Cuota
+    A: number; // Amortización
+    SegDes: number; // Seguro Desgravamen Cuota
+    SegRie: number; // Seguro de Riesgo
+    GPS: number; // Gastos de Portes y Seguros
+    Portes: number; // Portes
+    GasAdm: number; // Gastos Administrativos
+    SF: number; // Saldo Final para Cuota
+    Flujo: number; // Flujo
+}
+
+
 // classes
 
 class ResultadosFinanciamiento {
@@ -70,9 +94,31 @@ class ResultadosGastosPeriodicos {
     }
 }
 
-function getCuotas(frenchFee) {
+const getCuotas = (
+    frenchFee: FrenchFee,
+    resultadosFinanciamiento: ResultadosFinanciamiento,
+    resultadosGastosPeriodicos: ResultadosGastosPeriodicos
+) : CuotaType[]=> {
+    
+    let { PV, Plan, pCI, pCF, NA, Tasa, tpTasa, PC, frec, NDxA } = frenchFee;
 
-    return [];
+    let cuotaArray: CuotaType[] = [];
+    let cantPlazoGraciaTotal = 3;
+    let cantPlazoGraciaParcial = 3;
+
+    const { Prestamo } = resultadosFinanciamiento;
+
+    for (let i = 1; i <= resultadosFinanciamiento.N + 1; i++) {
+        let cuota: CuotaType = { NC: i, PG: 'S'} as CuotaType;
+        
+        if (--cantPlazoGraciaParcial) cuota.PG = 'T';
+        if (--cantPlazoGraciaTotal) cuota.PG = 'P';
+
+        if (i === 1) cuota.SICF = 
+
+        cuotaArray.push(cuota);
+    }
+    return cuotaArray;
 }
 
 class ResultadosTotales {
@@ -86,7 +132,6 @@ class ResultadosTotales {
 
     constructor (cuotas: any) {}
 }
-
 class ResultadosIndicadoresRentabilidad {
     COKi: number;
     TIR: number;
@@ -120,12 +165,19 @@ export const getFrenchFeeResults = async (frenchFee: FrenchFee) => {
 
     const resultadosGastosPeriodicos = new ResultadosGastosPeriodicos(resultadosFinanciamiento.NCxA, frenchFee);
 
-    const cuotas = getCuotas(frenchFee);
+    const cuotas = getCuotas(frenchFee, resultadosFinanciamiento, resultadosGastosPeriodicos);
 
     const resultadosTotales = new ResultadosTotales(cuotas);
 
     const resultadosIndicadoresRentabilidad = new ResultadosIndicadoresRentabilidad(frenchFee,resultadosFinanciamiento.Prestamo, resultadosTotales);
     
+    console.log({
+        resultadosFinanciamiento,
+        resultadosGastosPeriodicos,
+        cuotas,
+        resultadosTotales,
+        resultadosIndicadoresRentabilidad
+    })
 
     return {
         resultadosFinanciamiento,
