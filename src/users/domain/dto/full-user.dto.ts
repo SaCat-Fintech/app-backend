@@ -1,8 +1,17 @@
 import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
 import { ApiProperty, OmitType } from "@nestjs/swagger";
-import {User} from "../entities/user.entity";
 
-export class CreateUserProfileDto {
+export class CreateFullUserDto {
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    email: string;
+
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    password: string;
+
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -23,16 +32,16 @@ export class CreateUserProfileDto {
     @IsString()
     birthdate: Date;
 
-    @ApiProperty()
+    //@ApiProperty()
     @IsNotEmpty()
     @IsNumber()
     user_id: number;
 
-    @ApiProperty({ type: () => [Number], required: false })
+    //@ApiProperty({ type: () => [Number], required: false })
     @IsOptional()
     @IsArray()
     @IsNumber({}, { each: true })
     role_ids: number[];
 }
 
-export class UpdateUserProfileDto extends OmitType(CreateUserProfileDto, ['user_id'] as const) {}
+export class UpdateFullUserDto extends OmitType(CreateFullUserDto, ['user_id'] as const) {}

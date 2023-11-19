@@ -4,12 +4,15 @@ import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {CreateUserDto, UpdateUserDto} from "../../domain/dto/user.dto";
 import admin from "firebase-admin";
+import {CreateFullUserDto} from "../../domain/dto/full-user.dto";
+import {UserProfileService} from "./user-profile.service";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        private readonly userProfileService: UserProfileService,
     ) {}
     async findAll(): Promise<User[]> {
         return await this.userRepository.find({ order: { id: 'ASC' } });
@@ -34,6 +37,8 @@ export class UserService {
                 delete user.password;
                 return user;
             });
+
+
         } catch (error) {
             if (error.code === '23505') {
                 throw new UnauthorizedException('The email is already in use.');
@@ -86,4 +91,10 @@ export class UserService {
         }
     }
 
+    async createFullUser(userData: CreateFullUserDto): Promise<User> {
+        const user = this.create(new CreateUserDto(userData.email, userData.password));
+        userData.user_id = (await user).id;
+        await this.userProfileService.create(userData);
+        return user;
+    }
 }

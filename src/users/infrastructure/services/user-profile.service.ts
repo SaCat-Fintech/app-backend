@@ -42,7 +42,6 @@ export class UserProfileService {
 
             const newProfile = this.userProfileRepository.create(newUserProfile);
             newProfile.user = user;
-
             if (newUserProfile.role_ids && newUserProfile.role_ids.length > 0) {
                 const roles = await this.roleRepository.findByIds(newUserProfile.role_ids);
                 if (roles.length !== newUserProfile.role_ids.length) {
@@ -76,7 +75,7 @@ export class UserProfileService {
         existingUserProfile.dni = updateUserProfile.dni || existingUserProfile.dni;
         existingUserProfile.first_name = updateUserProfile.first_name || existingUserProfile.first_name;
         existingUserProfile.last_name = updateUserProfile.last_name || existingUserProfile.last_name;
-        existingUserProfile.phone_number = updateUserProfile.phone_number || existingUserProfile.phone_number;
+        existingUserProfile.birthdate = updateUserProfile.birthdate || existingUserProfile.birthdate;
 
         if (updateUserProfile.role_ids && updateUserProfile.role_ids.length > 0) {
             const roles = await this.roleRepository.findByIds(updateUserProfile.role_ids);
