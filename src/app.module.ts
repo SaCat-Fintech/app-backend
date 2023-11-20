@@ -9,9 +9,10 @@ import { FrenchFeesModule } from './french-fee/domain/modules/french-fee.module'
 import { RolesModule } from "./users/domain/modules/roles.module";
 import { UserProfileModule } from "./users/domain/modules/user-profile.module";
 import { UserModule } from "./users/domain/modules/user.module";
+import {InputDataModule} from "./french-method/domain/modules/input-data.module";
 
 @Module({
-  imports: [AuthModule, UserModule, RolesModule, UserProfileModule, FrenchFeesModule,
+  imports: [AuthModule, UserModule, RolesModule, UserProfileModule, FrenchFeesModule, InputDataModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,

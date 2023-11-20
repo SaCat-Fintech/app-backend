@@ -5,6 +5,7 @@ import { FrenchFee } from "src/french-fee/domain/entities/french-fee.entity";
 import { Role } from "../users/domain/entities/role.entity";
 import { UserProfile } from "../users/domain/entities/user-profile.entity";
 import { User } from "../users/domain/entities/user.entity";
+import {InputData} from "../french-method/domain/entities/input-data.entity";
 
 @Injectable()
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
@@ -17,7 +18,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
             username: this.configService.get<string>('POSTGRES_USER'),
             password: this.configService.get<string>('POSTGRES_PASSWORD'),
             database: this.configService.get<string>('POSTGRES_DB'),
-            entities: [Role, User, UserProfile, FrenchFee],
+            entities: [Role, User, UserProfile, FrenchFee, InputData],
             synchronize: true,
         }
     }
