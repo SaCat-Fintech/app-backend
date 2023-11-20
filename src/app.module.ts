@@ -10,9 +10,10 @@ import { RolesModule } from "./users/domain/modules/roles.module";
 import { UserProfileModule } from "./users/domain/modules/user-profile.module";
 import { UserModule } from "./users/domain/modules/user.module";
 import {InputDataModule} from "./french-method/domain/modules/input-data.module";
+import {PayRunModule} from "./french-method/domain/modules/pay-run.module";
 
 @Module({
-  imports: [AuthModule, UserModule, RolesModule, UserProfileModule, FrenchFeesModule, InputDataModule,
+  imports: [AuthModule, UserModule, RolesModule, UserProfileModule, FrenchFeesModule, InputDataModule, PayRunModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,
