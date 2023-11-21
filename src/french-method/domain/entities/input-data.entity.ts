@@ -1,6 +1,7 @@
-import {Column, Entity, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {ApiProperty} from "@nestjs/swagger";
-import {PayRun} from "./pay-run.entity";
+import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import { ApiProperty } from "@nestjs/swagger";
+import {Rate} from "./rate.entity";
+import {GracePeriod} from "./grace-period.entity";
 
 @Entity({ name: 'input-data'})
 export class InputData {
@@ -24,9 +25,14 @@ export class InputData {
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
     financing_percentage: number;
 
+    @ApiProperty()
+    @OneToOne(() => Rate)
+    @JoinColumn()
+    rate: Rate;
+
     @ApiProperty({ enum: ['monthly', 'quarterly', 'semi-annually', 'annually']})
     @Column({ type: 'varchar', length: 32, nullable: false})
-    payment_frequency: number;
+    payment_frequency: string;
 
     @ApiProperty({ enum: [24, 36]})
     @Column({ type: 'int', nullable: false})
@@ -35,4 +41,8 @@ export class InputData {
     @ApiProperty()
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
     cok_percentage: number;
+
+    @ApiProperty({ type: [GracePeriod] })
+    @OneToMany(() => GracePeriod, gracePeriod => gracePeriod.inputData, { eager: true})
+    gracePeriods: GracePeriod[];
 }

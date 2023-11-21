@@ -8,6 +8,12 @@ import {InputData} from "../../domain/entities/input-data.entity";
 export class InputDataController {
     constructor(private readonly inputDataService: InputDataService) {}
 
+    @Get()
+    @ApiResponse({status: 200, type: [InputData], description: 'Get all input data.'})
+    async findAll(): Promise<InputData[]> {
+        return await this.inputDataService.findAll();
+    }
+
     @Get(':id')
     @ApiResponse({status: 200, type: InputData, description: 'Get input data by id.'})
     async findOne(@Param('id') id: number): Promise<InputData> {

@@ -1,6 +1,7 @@
-import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import {PaymentInstallment} from "./payment-installment.entity";
 import {InputData} from "./input-data.entity";
+import {UserProfile} from "../../../users/domain/entities/user-profile.entity";
 
 @Entity({ name: 'pay-runs'})
 export class PayRun {
@@ -17,4 +18,7 @@ export class PayRun {
 
     @OneToMany(() => PaymentInstallment, paymentInstallment => paymentInstallment.payRun)
     paymentInstallments: PaymentInstallment[];
+
+    @ManyToOne(() => UserProfile, userProfile => userProfile.payRuns)
+    userProfile: UserProfile;
 }
