@@ -25,7 +25,7 @@ export class InputData {
 
     @ApiProperty({ enum: ['monthly', 'quarterly', 'semi-annually', 'annually']})
     @Column({ type: 'varchar', length: 32, nullable: false})
-    payment_frequency: number;
+    payment_frequency: string;
 
     @ApiProperty({ enum: [24, 36]})
     @Column({ type: 'int', nullable: false})

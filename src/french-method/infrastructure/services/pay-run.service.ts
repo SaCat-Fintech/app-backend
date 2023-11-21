@@ -2,24 +2,21 @@ import {Injectable, NotFoundException} from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
 import {PayRun} from "../../domain/entities/pay-run.entity";
 import {Repository} from "typeorm";
-import {PaymentInstallmentService} from "./payment-installment.service";
 import {InputData} from "../../domain/entities/input-data.entity";
 import {PaymentInstallment} from "../../domain/entities/payment-installment.entity";
-import {CreatePaymentInstallmentDto} from "../../domain/dto/payment-installment.dto";
-import {InputDataService} from "./input-data.service";
+import {UserProfileService} from "../../../users/infrastructure/services/user-profile.service";
+import {HistoryDto} from "../../domain/dto/history.dto";
 
 @Injectable()
 export class PayRunService {
     constructor(
         @InjectRepository(PayRun)
         private readonly payRunRepository: Repository<PayRun>,
-
-        private readonly paymentInstallmentService: PaymentInstallmentService,
-        private readonly inputDataService: InputDataService,
         @InjectRepository(PaymentInstallment)
         private readonly paymentInstallmentRepository: Repository<PaymentInstallment>,
         @InjectRepository(InputData)
         private readonly inputDataRepository: Repository<InputData>,
+        private readonly userProfileService: UserProfileService,
     ) {}
 
     async findAll(): Promise<PayRun[]> {
@@ -33,18 +30,37 @@ export class PayRunService {
         return payRun;
     }
 
-    async createPayRunWithInstallments(inputData: InputData): Promise<PayRun> {
+    async findByUserProfileId(userProfileId: number): Promise<HistoryDto[]> {
+        const payRuns = await this.payRunRepository.find({ where: { userProfile: { id: userProfileId } } });
+        console.log(payRuns[0].inputData)
+        /*
+        return payRuns.map((payRun) => ({
+            id: payRun.id,
+            created_at: payRun.created_at,
+            vehicle_cost: payRun.inputData.vehicle_cost,
+            currency: payRun.inputData.currency,
+            payment_frequency: payRun.inputData.payment_frequency,
+        } as HistoryDto));
+         */
+    }
+
+
+    async createPayRunWithInstallments(inputData: InputData, userId: number): Promise<PayRun> {
+        const userProfile = await this.userProfileService.findOne(userId);
+
         const input = this.inputDataRepository.create(inputData);
         await this.inputDataRepository.save(input);
-        const paymentInstallments = this.generateFrenchAmortizationSchedule(input);
+        const paymentInstallments = this.paymentInstallmentRepository.create(this.generateFrenchAmortizationSchedule(input));
         await this.paymentInstallmentRepository.save(paymentInstallments);
         const payRun = this.payRunRepository.create();
         payRun.inputData = input;
         payRun.paymentInstallments = paymentInstallments;
+        payRun.userProfile = userProfile;
         return await this.payRunRepository.save(payRun);
     }
 
     private generateFrenchAmortizationSchedule(inputData: InputData): PaymentInstallment[] {
+        // TODO: Implement French Amortization Schedule correctly
         const paymentInstallments: PaymentInstallment[] = [];
         let initialBalance = inputData.vehicle_cost;
         const interestRate = 0.0125;
