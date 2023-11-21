@@ -31,9 +31,8 @@ export class PayRunService {
     }
 
     async findByUserProfileId(userProfileId: number): Promise<HistoryDto[]> {
-        const payRuns = await this.payRunRepository.find({ where: { userProfile: { id: userProfileId } } });
-        console.log(payRuns[0].inputData)
-        /*
+        const payRuns = await this.payRunRepository.find({ where: { userProfile: { id: userProfileId } },
+            relations: ['inputData'] });
         return payRuns.map((payRun) => ({
             id: payRun.id,
             created_at: payRun.created_at,
@@ -41,7 +40,6 @@ export class PayRunService {
             currency: payRun.inputData.currency,
             payment_frequency: payRun.inputData.payment_frequency,
         } as HistoryDto));
-         */
     }
 
 
