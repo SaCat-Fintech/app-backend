@@ -20,7 +20,11 @@ export class PaymentInstallmentService {
         return await this.paymentInstallmentRepository.save(paymentInstallment);
     }
 
+    async instance(): Promise<PaymentInstallment> {
+        return this.paymentInstallmentRepository.create();
+    }
     async saveMuch(paymentInstallments: PaymentInstallment[]): Promise<PaymentInstallment[]> {
         return await this.paymentInstallmentRepository.save(paymentInstallments);
     }
+
 }

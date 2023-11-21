@@ -22,6 +22,7 @@ export class PaymentInstallment {
 
     @ManyToOne(() => PayRun, payRun => payRun.paymentInstallments)
     payRun: PayRun;
+
     constructor(payment_number: number, initial_balance: number, payment_amount: number, interest_amount: number,
                 amortization: number, installment: number, outstanding_balance: number) {
         this.payment_number = payment_number;

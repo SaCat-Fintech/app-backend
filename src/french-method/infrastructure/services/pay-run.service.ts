@@ -13,8 +13,13 @@ export class PayRunService {
     constructor(
         @InjectRepository(PayRun)
         private readonly payRunRepository: Repository<PayRun>,
+
         private readonly paymentInstallmentService: PaymentInstallmentService,
         private readonly inputDataService: InputDataService,
+        @InjectRepository(PaymentInstallment)
+        private readonly paymentInstallmentRepository: Repository<PaymentInstallment>,
+        @InjectRepository(InputData)
+        private readonly inputDataRepository: Repository<InputData>,
     ) {}
 
     async findAll(): Promise<PayRun[]> {
@@ -29,38 +34,46 @@ export class PayRunService {
     }
 
     async createPayRunWithInstallments(inputData: InputData): Promise<PayRun> {
-        const inputDataSource = await this.inputDataService.create(inputData);
+        const input = this.inputDataRepository.create(inputData);
+        await this.inputDataRepository.save(input);
+        const paymentInstallments = this.generateFrenchAmortizationSchedule(input);
+        await this.paymentInstallmentRepository.save(paymentInstallments);
         const payRun = this.payRunRepository.create();
-        payRun.inputData = inputDataSource;
-        //this.generateFrenchAmortizationSchedule(inputData);
+        payRun.inputData = input;
+        payRun.paymentInstallments = paymentInstallments;
         return await this.payRunRepository.save(payRun);
     }
 
-    private generateFrenchAmortizationSchedule(inputData: InputData): void {
-        let paymentInstallments : PaymentInstallment[] = [];
+    private generateFrenchAmortizationSchedule(inputData: InputData): PaymentInstallment[] {
+        const paymentInstallments: PaymentInstallment[] = [];
         let initialBalance = inputData.vehicle_cost;
         const interestRate = 0.0125;
         const numberOfPayments = 24;
-        const paymentAmount = initialBalance * (interestRate * Math.pow(1 + interestRate, numberOfPayments)) / (Math.pow(1 + interestRate, numberOfPayments) - 1);
+        const paymentAmount =
+            (initialBalance * interestRate * Math.pow(1 + interestRate, numberOfPayments)) /
+            (Math.pow(1 + interestRate, numberOfPayments) - 1);
+
         let interestAmount = initialBalance * interestRate;
         const amortization = paymentAmount - interestAmount;
-        let outstandingBalance = initialBalance - amortization;
+        let outstandingBalance = initialBalance;
+
         for (let i = 1; i <= numberOfPayments; i++) {
-            let paymentInstallment: PaymentInstallment;
-            paymentInstallment = new PaymentInstallment(
+            const payment = new PaymentInstallment(
                 i,
                 initialBalance,
                 paymentAmount,
                 interestAmount,
                 amortization,
-                50,
-                outstandingBalance,
+                0,
+                outstandingBalance
             );
-            paymentInstallments.push(paymentInstallment);
+            paymentInstallments.push(payment);
+
             initialBalance = outstandingBalance;
             interestAmount = initialBalance * interestRate;
-            outstandingBalance = initialBalance - amortization;
+            outstandingBalance -= amortization;
         }
-        this.paymentInstallmentService.saveMuch(paymentInstallments);
+        return paymentInstallments;
     }
+
 }
