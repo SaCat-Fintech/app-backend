@@ -13,7 +13,7 @@ import {InputDataModule} from "./french-method/domain/modules/input-data.module"
 import {PayRunModule} from "./french-method/domain/modules/pay-run.module";
 
 @Module({
-  imports: [AuthModule, UserModule, RolesModule, UserProfileModule, FrenchFeesModule, InputDataModule, PayRunModule,
+  imports: [AuthModule, PayRunModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useClass: TypeOrmConfigService,

@@ -2,26 +2,20 @@ import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import { AuthService } from '../../infrastructure/services/auth.service';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from '../../interfaces/controllers/auth.controller';
-import { jwtConstants } from '../../constants';
 import { FirebaseAuthMiddleware } from "../../../middleware/firebase.auth.middleware";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "../../../users/domain/entities/user.entity";
-import { UserModule } from "../../../users/domain/modules/user.module";
 import { FirebaseService } from "../../../configuration/firebase.config";
-import {UserProfileModule} from "../../../users/domain/modules/user-profile.module";
+import { UserService } from "../../../users/infrastructure/services/user.service";
+import { UserProfileService } from "../../../users/infrastructure/services/user-profile.service";
+import { UserProfile } from "../../../users/domain/entities/user-profile.entity";
+import { Role } from "../../../users/domain/entities/role.entity";
 
 @Module({
   imports: [
-    UserModule,
-    JwtModule.register({
-      global: true,
-      secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
-    }),
-    TypeOrmModule.forFeature([User]),
-    UserProfileModule
+    TypeOrmModule.forFeature([User, UserProfile, Role]),
   ],
-  providers: [AuthService, FirebaseService],
+  providers: [AuthService, FirebaseService, UserService, UserProfileService],
   controllers: [AuthController],
   exports: [AuthService, TypeOrmModule],
 })

@@ -6,14 +6,12 @@ import { UserProfileController } from "../../interfaces/controllers/user-profile
 import { User } from "../entities/user.entity";
 import { Role } from "../entities/role.entity";
 import { FirebaseAuthMiddleware } from "../../../middleware/firebase.auth.middleware";
-import { RoleController } from "../../interfaces/controllers/role.controller";
-import {UserModule} from "./user.module";
 
 @Module({
     imports: [TypeOrmModule.forFeature([User, Role, UserProfile])],
     providers: [UserProfileService],
     controllers: [UserProfileController],
-    exports: [TypeOrmModule],
+    exports: [TypeOrmModule, UserProfileService],
 })
 export class UserProfileModule implements NestModule {
     configure(consumer: MiddlewareConsumer){

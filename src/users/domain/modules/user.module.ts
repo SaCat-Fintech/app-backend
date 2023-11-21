@@ -4,9 +4,8 @@ import { User } from "../entities/user.entity";
 import { UserService } from "../../infrastructure/services/user.service";
 import { UserController } from "../../interfaces/controllers/user.controller";
 import { FirebaseAuthMiddleware } from "../../../middleware/firebase.auth.middleware";
-import {RoleController} from "../../interfaces/controllers/role.controller";
-import {UserProfileService} from "../../infrastructure/services/user-profile.service";
-import {UserProfileModule} from "./user-profile.module";
+import { UserProfileService } from "../../infrastructure/services/user-profile.service";
+import { UserProfileModule } from "./user-profile.module";
 
 @Module({
     imports: [TypeOrmModule.forFeature([User]), UserProfileModule],
