@@ -33,15 +33,21 @@ export class PayRunController {
         return await this.paymentInstallmentService.findByPayRunId(id);
     }
 
-    @Post('operation/:userId')
+    @Post('operation/:userProfileId')
     @ApiResponse({status: 201, description: 'Create pay run.'})
-    async createPayRun(@Param('userId') userId: number, @Body() inputData: InputData): Promise<PayRun> {
-        return await this.payRunService.createPayRunWithInstallments(inputData, userId);
+    async createPayRun(@Param('userProfileId') userProfileId: number, @Body() inputData: InputData): Promise<PayRun> {
+        return await this.payRunService.createPayRunWithInstallments(inputData, userProfileId);
     }
 
-    @Get('history/:userId')
+    @Get('history/:userProfileId')
     @ApiResponse({status: 200, description: 'Get pay run history.'})
-    async getPayRunHistory(@Param('userId') userId: number): Promise<HistoryDto[]> {
-        return await this.payRunService.findByUserProfileId(userId);
+    async getPayRunHistory(@Param('userProfileId') userProfileId: number): Promise<HistoryDto[]> {
+        return await this.payRunService.findByUserProfileId(userProfileId);
+    }
+
+    @Get('detail/:id')
+    @ApiResponse({status: 200, description: 'Get pay run detail.'})
+    async getPayRunDetail(@Param('id') id: number): Promise<PayRun> {
+        return await this.payRunService.findDetail(id);
     }
 }

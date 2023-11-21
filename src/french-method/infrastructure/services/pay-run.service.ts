@@ -6,6 +6,7 @@ import {InputData} from "../../domain/entities/input-data.entity";
 import {PaymentInstallment} from "../../domain/entities/payment-installment.entity";
 import {UserProfileService} from "../../../users/infrastructure/services/user-profile.service";
 import {HistoryDto} from "../../domain/dto/history.dto";
+import {Rate} from "../../domain/entities/rate.entity";
 
 @Injectable()
 export class PayRunService {
@@ -16,6 +17,8 @@ export class PayRunService {
         private readonly paymentInstallmentRepository: Repository<PaymentInstallment>,
         @InjectRepository(InputData)
         private readonly inputDataRepository: Repository<InputData>,
+        @InjectRepository(Rate)
+        private readonly rateRepository: Repository<Rate>,
         private readonly userProfileService: UserProfileService,
     ) {}
 
@@ -32,12 +35,17 @@ export class PayRunService {
 
     async findByUserProfileId(userProfileId: number): Promise<HistoryDto[]> {
         const payRuns = await this.payRunRepository.find({ where: { userProfile: { id: userProfileId } },
-            relations: ['inputData'] });
+            relations: ['inputData', 'inputData.rate'],
+            order: { id: 'ASC' }
+        });
         return payRuns.map((payRun) => ({
             id: payRun.id,
             created_at: payRun.created_at,
             vehicle_cost: payRun.inputData.vehicle_cost,
             currency: payRun.inputData.currency,
+            rate_value: payRun.inputData.rate.rate_value ,
+            rate_type: payRun.inputData.rate.rate_type,
+            rate_period: payRun.inputData.rate.rate_period,
             payment_frequency: payRun.inputData.payment_frequency,
         } as HistoryDto));
     }
@@ -46,7 +54,10 @@ export class PayRunService {
     async createPayRunWithInstallments(inputData: InputData, userId: number): Promise<PayRun> {
         const userProfile = await this.userProfileService.findOne(userId);
 
+        const rate = this.rateRepository.create(inputData.rate);
+        await this.rateRepository.save(rate);
         const input = this.inputDataRepository.create(inputData);
+        input.rate = rate;
         await this.inputDataRepository.save(input);
         const paymentInstallments = this.paymentInstallmentRepository.create(this.generateFrenchAmortizationSchedule(input));
         await this.paymentInstallmentRepository.save(paymentInstallments);
@@ -90,4 +101,11 @@ export class PayRunService {
         return paymentInstallments;
     }
 
+    async findDetail(id: number): Promise<PayRun> {
+        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'paymentInstallments']});
+        if (!payRun) {
+            throw new NotFoundException(`The pay run with ID ${id} was not found.`);
+        }
+        return payRun;
+    }
 }

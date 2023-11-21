@@ -10,5 +10,11 @@ export class HistoryDto {
     @ApiProperty()
     currency: string;
     @ApiProperty()
+    rate_value: number;
+    @ApiProperty()
+    rate_type: string;
+    @ApiProperty()
+    rate_period: string;
+    @ApiProperty()
     payment_frequency: string;
 }

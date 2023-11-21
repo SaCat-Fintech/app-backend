@@ -9,9 +9,11 @@ import {PaymentInstallmentService} from "../../infrastructure/services/payment-i
 import {PayRunController} from "../../interfaces/controllers/pay-run.controller";
 import {UserProfileService} from "../../../users/infrastructure/services/user-profile.service";
 import {UserProfileModule} from "../../../users/domain/modules/user-profile.module";
+import {Rate} from "../entities/rate.entity";
+import {GracePeriod} from "../entities/grace-period.entity";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([InputData, PayRun, PaymentInstallment]), UserProfileModule],
+    imports: [TypeOrmModule.forFeature([InputData, PayRun, PaymentInstallment, Rate, GracePeriod]), UserProfileModule],
     providers: [PayRunService, InputDataService, PaymentInstallmentService, UserProfileService],
     controllers: [PayRunController],
     exports: [TypeOrmModule],
