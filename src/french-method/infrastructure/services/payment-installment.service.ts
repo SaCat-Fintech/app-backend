@@ -12,4 +12,15 @@ export class PaymentInstallmentService {
     async findAll(): Promise<PaymentInstallment[]> {
         return await this.paymentInstallmentRepository.find();
     }
+    async findByPayRunId(payRunId: number): Promise<PaymentInstallment[]> {
+        return await this.paymentInstallmentRepository.find({ where: { payRun: { id: payRunId } } });
+    }
+
+    async create(paymentInstallment: PaymentInstallment): Promise<PaymentInstallment> {
+        return await this.paymentInstallmentRepository.save(paymentInstallment);
+    }
+
+    async saveMuch(paymentInstallments: PaymentInstallment[]): Promise<PaymentInstallment[]> {
+        return await this.paymentInstallmentRepository.save(paymentInstallments);
+    }
 }
