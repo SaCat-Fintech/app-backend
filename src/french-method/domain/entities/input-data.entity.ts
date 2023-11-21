@@ -42,7 +42,7 @@ export class InputData {
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
     cok_percentage: number;
 
-    @ApiProperty()
+    @ApiProperty({ type: [GracePeriod] })
     @OneToMany(() => GracePeriod, gracePeriod => gracePeriod.inputData, { eager: true})
     gracePeriods: GracePeriod[];
 }
