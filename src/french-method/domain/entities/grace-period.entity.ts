@@ -1,12 +1,12 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {ApiProperty} from "@nestjs/swagger";
-import {InputData} from "./input-data.entity";
+import { ApiProperty } from "@nestjs/swagger";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { InputData } from "./input-data.entity";
 
 @Entity({ name: 'grace-periods'})
 export class GracePeriod {
     @PrimaryGeneratedColumn()
     id: number;
-    @ApiProperty()
+    @ApiProperty({ enum: ['TOTAL', 'PARTIAL']})
     @Column({ type: 'varchar', length: 32, nullable: false })
     type: string;
     @ApiProperty()

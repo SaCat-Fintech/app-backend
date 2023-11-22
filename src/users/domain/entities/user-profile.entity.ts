@@ -1,5 +1,4 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { FrenchFee } from 'src/french-fee/domain/entities/french-fee.entity';
 import {
     BeforeInsert,
     Column,
@@ -11,9 +10,9 @@ import {
     OneToOne,
     PrimaryGeneratedColumn
 } from 'typeorm';
+import { PayRun } from "../../../french-method/domain/entities/pay-run.entity";
 import { Role } from "./role.entity";
 import { User } from "./user.entity";
-import {PayRun} from "../../../french-method/domain/entities/pay-run.entity";
 @Entity({ name: 'user_profiles' })
 export class UserProfile {
     @ApiProperty()
@@ -64,8 +63,4 @@ export class UserProfile {
     @OneToMany(() => PayRun, payRun => payRun.userProfile)
     payRuns: PayRun[];
 
-
-    @OneToMany(() => FrenchFee, frenchFee => frenchFee.userProfile, { eager: true })
-    @ApiProperty({ type: () => [FrenchFee] })
-    frenchFees: FrenchFee[];
 }

@@ -1,7 +1,8 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
-import {PaymentInstallment} from "./payment-installment.entity";
-import {InputData} from "./input-data.entity";
-import {UserProfile} from "../../../users/domain/entities/user-profile.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { UserProfile } from "../../../users/domain/entities/user-profile.entity";
+import { InputData } from "./input-data.entity";
+import { PaymentInstallment } from "./payment-installment.entity";
+import { ProfitabilityIndicator } from "./profitability-indicator.entity";
 
 @Entity({ name: 'pay-runs'})
 export class PayRun {
@@ -15,6 +16,11 @@ export class PayRun {
     @OneToOne(() => InputData)
     @JoinColumn()
     inputData: InputData;
+
+    //TODO: add profitability indicator
+    /* @OneToOne(() => ProfitabilityIndicator)
+    @JoinColumn()
+    profitabilityIndicator: ProfitabilityIndicator; */
 
     @OneToMany(() => PaymentInstallment, paymentInstallment => paymentInstallment.payRun)
     paymentInstallments: PaymentInstallment[];

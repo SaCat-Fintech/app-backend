@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { ApiProperty } from "@nestjs/swagger";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'profitability-indicators'})
 export class ProfitabilityIndicator {
@@ -7,9 +8,9 @@ export class ProfitabilityIndicator {
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
     discount_rate: number;
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
-    tir_percentage: number;
+    internal_rate_of_return: number;
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
-    tcea_percentage: number;
+    annual_effective_cost_rate: number;
     @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false})
-    van: number;
+    net_present_value: number;
 }

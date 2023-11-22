@@ -1,5 +1,5 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
-import {PayRun} from "./pay-run.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { PayRun } from "./pay-run.entity";
 
 @Entity({ name: 'payment-installments'})
 export class PaymentInstallment {
@@ -23,12 +23,11 @@ export class PaymentInstallment {
     @ManyToOne(() => PayRun, payRun => payRun.paymentInstallments)
     payRun: PayRun;
 
-    constructor(payment_number: number, initial_balance: number, payment_amount: number, interest_amount: number,
-                amortization: number, installment: number, outstanding_balance: number) {
+    constructor(payment_number: number, initial_balance: number, interest_amount:number, payment_amount: number, amortization: number, installment: number, outstanding_balance: number) {
         this.payment_number = payment_number;
         this.initial_balance = initial_balance;
-        this.payment_amount = payment_amount;
         this.interest_amount = interest_amount;
+        this.payment_amount = payment_amount;
         this.amortization = amortization;
         this.installment = installment;
         this.outstanding_balance = outstanding_balance;

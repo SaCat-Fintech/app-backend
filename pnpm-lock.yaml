@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@formulajs/formulajs':
+    specifier: ^4.3.4
+    version: 4.3.4
   '@nestjs/common':
     specifier: ^10.0.0
     version: 10.2.7(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -1083,6 +1086,14 @@ packages:
 
   /@firebase/webchannel-wrapper@0.10.3:
     resolution: {integrity: sha512-+ZplYUN3HOpgCfgInqgdDAbkGGVzES1cs32JJpeqoh87SkRobGXElJx+1GZSaDqzFL+bYiX18qEcBK76mYs8uA==}
+    dev: false
+
+  /@formulajs/formulajs@4.3.4:
+    resolution: {integrity: sha512-iETOopDEUmKaeEUofUfazebhihErh+klyRQbEemDnnBj0hcwNu3xF0oAPHVL0vU/E01rVjy/ZC+1UBMOVkXrvQ==}
+    hasBin: true
+    dependencies:
+      bessel: 1.0.2
+      jstat: 1.9.6
     dev: false
 
   /@google-cloud/firestore@6.8.0:
@@ -2686,6 +2697,11 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: false
+
+  /bessel@1.0.2:
+    resolution: {integrity: sha512-Al3nHGQGqDYqqinXhQzmwmcRToe/3WyBv4N8aZc5Pef8xw2neZlR9VPi84Sa23JtgWcucu18HxVZrnI0fn2etw==}
+    engines: {node: '>=0.8'}
     dev: false
 
   /big-integer@1.6.51:
@@ -5151,6 +5167,10 @@ packages:
       lodash: 4.17.21
       ms: 2.1.3
       semver: 7.5.4
+    dev: false
+
+  /jstat@1.9.6:
+    resolution: {integrity: sha512-rPBkJbK2TnA8pzs93QcDDPlKcrtZWuuCo2dVR0TFLOJSxhqfWOVCSp8aV3/oSbn+4uY4yw1URtLpHQedtmXfug==}
     dev: false
 
   /jwa@1.4.1:
