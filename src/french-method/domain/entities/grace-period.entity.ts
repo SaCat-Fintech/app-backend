@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import { InputData } from "./input-data.entity";
 
 @Entity({ name: "grace-periods" })
@@ -13,11 +13,9 @@ export class GracePeriod {
   // TODO CORRECT: consider dictionary of grace_period values, they can be from 1 to 3
   @ApiProperty()
   @Column({ type: "int", nullable: false })
-  value: number;
-  @ApiProperty()
-  @Column({ type: "int", nullable: false })
   period_number: number;
 
   @ManyToOne(() => InputData, (inputData) => inputData.gracePeriods)
+  @JoinColumn({ name: "input_data_id" })
   inputData: InputData;
 }

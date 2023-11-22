@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import { PayRun } from "./pay-run.entity";
 
 @Entity({ name: 'payment-installments'})
@@ -21,6 +21,7 @@ export class PaymentInstallment {
     outstanding_balance: number;
 
     @ManyToOne(() => PayRun, payRun => payRun.paymentInstallments)
+    @JoinColumn({ name: 'pay_run_id' })
     payRun: PayRun;
 
     constructor(payment_number: number, initial_balance: number, interest_amount:number, payment_amount: number, amortization: number, installment: number, outstanding_balance: number) {

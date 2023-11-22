@@ -34,10 +34,9 @@ export class InputData {
 
   @ApiProperty()
   @OneToOne(() => Rate)
-  @JoinColumn()
+  @JoinColumn({ name: "rate_id" })
   rate: Rate;
 
-  // { name: "Annual" }, { name: "Semester" }, { name: "Quatrimesterly" }, { name: "Quarterly" }, { name: "Bimonthly" }, { name: "Monthly" }, { name: "Fortnightly" }, { name: "Diary" },
   @ApiProperty({ enum: ["monthly", "quarterly", "semi-annually", "annual"] })
   @Column({ type: "varchar", length: 32, nullable: false })
   payment_frequency: string;
