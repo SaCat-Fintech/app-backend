@@ -12,7 +12,6 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
-
   finances_backend:
     image: node:18
     working_dir: /usr/src/app
@@ -41,7 +40,5 @@ services:
       - postgres
     ports:
       - "3000:3000"
-
 volumes:
   pgdata:
-    
