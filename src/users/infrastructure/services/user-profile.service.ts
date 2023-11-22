@@ -97,4 +97,13 @@ export class UserProfileService {
         await this.userProfileRepository.delete(id);
         return `The user profile with ID ${id} was deleted.`;
     }
+    async findByFirebaseUid(uid: string): Promise<UserProfile> {
+        const user = await this.userRepository.findOne({where: {firebase_uid: uid},
+            relations: ['userProfile']
+        });
+        if (!user) {
+            throw new NotFoundException(`The user with UID ${uid} was not found.`);
+        }
+        return user.userProfile;
+    }
 }
