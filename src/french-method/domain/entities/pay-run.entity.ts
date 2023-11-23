@@ -14,7 +14,7 @@ export class PayRun {
     updated_at: Date;
 
     @OneToOne(() => InputData)
-    @JoinColumn()
+    @JoinColumn({ name: 'input_data_id' })
     inputData: InputData;
 
     //TODO: add profitability indicator
@@ -26,5 +26,6 @@ export class PayRun {
     paymentInstallments: PaymentInstallment[];
 
     @ManyToOne(() => UserProfile, userProfile => userProfile.payRuns)
+    @JoinColumn({ name: 'user_profile_id' })
     userProfile: UserProfile;
 }
