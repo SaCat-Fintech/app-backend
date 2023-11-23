@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/webstorm,visualstudiocode,node,firebase
 # Edit at https://www.toptal.com/developers/gitignore?templates=webstorm,visualstudiocode,node,firebase
 
+**/.pnpm-store/
+
 sacat-auth-firebase-adminsdk-kjkr7-4791cee664.json
 
 ### Firebase ###
