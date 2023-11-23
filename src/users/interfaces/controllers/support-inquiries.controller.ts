@@ -14,7 +14,6 @@ export class SupportInquiriesController {
         return await this.supportInquiriesService.findOne(id);
     }
 
-    @ApiBearerAuth()
     @Post('')
     @ApiResponse({ status: 201, type: SupportInquiries, description: 'Create support inquiry.'})
     async createSupportInquiry(@Body() supportInquiry: SupportInquiries): Promise<SupportInquiries> {

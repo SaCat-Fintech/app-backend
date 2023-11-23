@@ -16,10 +16,10 @@ export class SupportInquiries{
     full_name: string;
 
     @ApiProperty()
-    @Column({ type: 'varchar', length: 9, nullable: false })
+    @Column({ type: 'varchar', length: 12, nullable: false })
     phone_number: string;
 
     @ApiProperty()
-    @Column({ type: 'varchar', length: 255, nullable: false })
+    @Column({ type: 'varchar', length: 500, nullable: false })
     subject: string;
 }
