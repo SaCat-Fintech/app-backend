@@ -203,7 +203,7 @@ export class PayRunService {
 
     // async findDetail(id: number): Promise<PayRun> {
     async findDetail(id: number): Promise<any> {
-        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'inputData.rate', 'paymentInstallments', 'profitabilityIndicator', 'financingResult']});
+        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'inputData.rate', 'inputData.gracePeriod', 'paymentInstallments', 'profitabilityIndicator', 'financingResult']});
 
         if (!payRun) {
             throw new NotFoundException(`The pay run with ID ${id} was not found.`);
