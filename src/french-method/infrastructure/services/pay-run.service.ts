@@ -90,12 +90,14 @@ export class PayRunService {
 
         // validations
         if (rate_type !== 'TEA' && rate_type !== 'TNA') throw new Error('Invalid rate type');
-        if (capitalization_period !== 'monthly' && capitalization_period !== 'quarterly' && capitalization_period !== 'semi-annually' && capitalization_period !== 'annually') throw new Error('Invalid rate period');
+        if (capitalization_period !== 'monthly' && capitalization_period !== 'quarterly' && capitalization_period !== 'semi-annually' && capitalization_period !== 'annually') throw new Error('Invalid capitalization period');
         if (payment_frequency !== 'monthly' && payment_frequency !== 'quarterly' && payment_frequency !== 'semi-annually' && payment_frequency !== 'annually') throw new Error('Invalid payment frequency');
+        if (rate_period !== 'monthly' && rate_period !== 'quarterly' && rate_period !== 'semi-annually' && rate_period !== 'annually') throw new Error('Invalid rate period');
 
         // necessary variables
         const capitalization_period_days = getPeriodDays(capitalization_period);
         const payment_frequency_days = getPeriodDays(payment_frequency);
+        const rate_period_days = getPeriodDays(rate_period);
 
         const days_per_year = 360;
 
@@ -105,7 +107,7 @@ export class PayRunService {
         const final_fee = roundNumber(1-initial_payment_percentage-financing_percentage);
         const number_of_years = amount_of_fees/12;     
 
-        const annual_effective_rate = calculateAnnualEffectiveRate(rate_type, rate_value, days_per_year, capitalization_period_days);
+        const annual_effective_rate = calculateAnnualEffectiveRate(rate_type, rate_value, days_per_year, capitalization_period_days, rate_period_days);
 
         const effective_rate_by_payment_frequency = calculateEffectiveRateByPaymentFrequency(payment_frequency_days, annual_effective_rate, days_per_year);
 
@@ -154,6 +156,8 @@ export class PayRunService {
         const { inputData } = payRun;
         const rate = await this.rateRepository.findOne({where: {id: 3}});
         inputData.rate = rate;
+
+        console.log(inputData)
         
         const results = this.generateFrenchAmortizationSchedule(inputData);
         

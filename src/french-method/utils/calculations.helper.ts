@@ -34,7 +34,11 @@ const inputData={
             "value": 1,
             "period_number": 2
         }
-    ]
+    ],
+    "grace_period": {
+        type: "TOTAL",
+        periods: [10,24,30]
+    }
    }
 
 export const roundNumber = (n: number) => {
@@ -54,14 +58,16 @@ export const getPeriodDays = (period: PeriodType) => {
     }
 }
 
-export const calculateAnnualEffectiveRate = (rate_type: RateType, rate_value: number, days_per_year: number, capitalization_period_days: number): number => {
+
+
+export const calculateAnnualEffectiveRate = (rate_type: RateType, rate_value: number, days_per_year: number, capitalization_period_days: number, rate_period_days: number): number => {
 
     let result = 0;
     
-    if (rate_type === 'TNA') {
-        result = Math.pow(1 + rate_value / (days_per_year / capitalization_period_days), days_per_year / capitalization_period_days) - 1;
+    if (rate_type === 'TNA') { //change this to EFFECTIVE, NOMINAL
+        result = Math.pow(1 + (rate_value / (rate_period_days / capitalization_period_days)) / (days_per_year / capitalization_period_days), days_per_year / capitalization_period_days) - 1;
     } else {
-        result = Math.pow(1 + rate_value, 360 / capitalization_period_days) - 1;
+        result = Math.pow(1 + rate_value, 360 / rate_period_days) - 1;
     }
     
     return result;
@@ -70,6 +76,7 @@ export const calculateAnnualEffectiveRate = (rate_type: RateType, rate_value: nu
 export const calculateEffectiveRateByPaymentFrequency = (payment_frequency_days: number, annual_effective_rate: number, days_per_year: number) => {
     return Math.pow(1 + annual_effective_rate, payment_frequency_days / days_per_year) - 1;
 }
+
 
 export const calculateFinancedBalanceInstallment = (lease: number, final_ammount: number, effective_rate: number, fees_ammount: number) => {
     return lease - (final_ammount / Math.pow(1 + effective_rate, fees_ammount+1));

@@ -31,6 +31,7 @@ services:
       - STORAGE_BUCKET=sacat-auth.appspot.com
       - MESSAGING_SENDER_ID=523867594842
       - APP_ID=1:523867594842:web:1ad63d715da7fcd6047863
+      - FRONT_URL=http://localhost:3001
       - ENVIRONMENT=development
     command: >
       sh -c "npm install -g pnpm &&
