@@ -56,13 +56,13 @@ export class PayRunService {
             currency: payRun.inputData.currency,
             rate_value: payRun.inputData.rate.rate_value ,
             rate_type: payRun.inputData.rate.rate_type,
-            rate_period: payRun.inputData.rate.rate_period,
+            payment_years: payRun.inputData.amount_of_fees / 12,
             payment_frequency: payRun.inputData.payment_frequency,
         } as HistoryDto));
     }
 
 
-    async createPayRunWithInstallments(inputData: InputData, userId: number): Promise<PayRun> {
+    async createPayRunWithInstallments(inputData: InputData, userId: number): Promise<any> {
 
         try {
             const userProfile = await this.userProfileService.findOne(userId);
@@ -104,7 +104,11 @@ export class PayRunService {
             payRun.profitabilityIndicator = profitabilityIndicator;
             payRun.financingResult = financingResult;
 
-            return await this.payRunRepository.save(payRun);
+            const savedPayRun = await this.payRunRepository.save(payRun);
+            return {
+                id: savedPayRun.id,
+                created_at: savedPayRun.created_at,
+            };
         } catch (error) {
             throw new Error(error)
         }
@@ -127,6 +131,7 @@ export class PayRunService {
 
         // validations
         if (rate_type !== 'EFFECTIVE' && rate_type !== 'NOMINAL') throw new Error('Invalid rate type');
+
         let capitalization_period_v = validatePeriodType(capitalization_period);
         let payment_frequency_v = validatePeriodType(payment_frequency);
         let rate_period_v = validatePeriodType(rate_period);
@@ -158,7 +163,7 @@ export class PayRunService {
 
         // french amortization schedule
 
-        const payment_installments = calculatePaymentInstallments(financed_balance_with_installment, amount_of_fees, effective_rate_by_payment_frequency, gracePeriod);
+        const payment_installments = calculatePaymentInstallments(financed_balance_with_installment, amount_of_fees, effective_rate_by_payment_frequency, gracePeriod, final_fee_ammount);
 
         // some util results
         
@@ -198,7 +203,7 @@ export class PayRunService {
 
     // async findDetail(id: number): Promise<PayRun> {
     async findDetail(id: number): Promise<any> {
-        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'inputData.rate', 'paymentInstallments', 'profitabilityIndicator']});
+        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'inputData.rate', 'paymentInstallments', 'profitabilityIndicator', 'financingResult']});
 
         if (!payRun) {
             throw new NotFoundException(`The pay run with ID ${id} was not found.`);

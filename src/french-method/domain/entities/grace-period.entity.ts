@@ -7,7 +7,7 @@ export class GracePeriod {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ enum: ["TOTAL", "PARTIAL"] })
+  @ApiProperty({ enum: ["TOTAL", "PARTIAL", "NONE"] })
   @Column({ type: "varchar", length: 32, nullable: false })
   type: string;
   

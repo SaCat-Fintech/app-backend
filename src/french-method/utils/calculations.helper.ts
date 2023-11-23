@@ -88,19 +88,16 @@ export const calculatePaymentInstallments = (
   amount_of_fees: number,
   effective_rate_by_payment_frequency: number,
   gracePeriods: GracePeriod,
+  final_fee_ammount: number,
 ) => {
   // Initializa la data
   let initial_balance = start_balance;
   let final_balance = 0;
-  
-    console.log(gracePeriods)
 
   let gracePeriodsMap = {};
   for (let i = 0; i < gracePeriods.period_numbers.length; i++) {
     gracePeriodsMap[gracePeriods.period_numbers[i]] = gracePeriods.type;
   }
-
-  console.log(gracePeriodsMap)
 
   let results: PaymentInstallment[] = [];
 
@@ -121,7 +118,6 @@ export const calculatePaymentInstallments = (
     let grace_period = gracePeriodsMap[i];
 
     if (i < amount_of_fees + 1) {
-      payment_amount = roundNumber(interest_amount);
       if (grace_period) {
         if (grace_period === "PARTIAL") {
           payment_amount = interest_amount;
@@ -140,6 +136,8 @@ export const calculatePaymentInstallments = (
 
     if (grace_period === "TOTAL") {
       final_balance = initial_balance - interest_amount;
+      payment_amount = 0;
+      amortization_ammount = 0;
     } else {
       final_balance = initial_balance + amortization_ammount;
     }
@@ -149,13 +147,19 @@ export const calculatePaymentInstallments = (
       final_balance = 0;
     }
 
+    let flux = payment_amount;
+
+    if (i === amount_of_fees + 1) {
+      flux = -final_fee_ammount;
+    }
+
     let payment_installment = new PaymentInstallment(
       i,
       initial_balance,
       interest_amount,
       payment_amount,
       amortization_ammount,
-      payment_amount,
+      flux,
       final_balance,
     );
 

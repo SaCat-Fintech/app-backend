@@ -14,7 +14,7 @@ export class HistoryDto {
     @ApiProperty()
     rate_type: string;
     @ApiProperty()
-    rate_period: string;
+    payment_years: number;
     @ApiProperty()
     payment_frequency: string;
 }
