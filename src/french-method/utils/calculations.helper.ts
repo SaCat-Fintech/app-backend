@@ -3,56 +3,23 @@ import { GracePeriod } from "../domain/entities/grace-period.entity";
 import { PaymentInstallment } from "../domain/entities/payment-installment.entity";
 
 type RateType = "EFFECTIVE" | "NOMINAL";
-type PeriodType = "daily" | "biweekly" | "monthly" | "bimonthly" | "quarterly" | "quatrimesterly" | "semester" | "annually";
+type PeriodType = "null" | "daily" | "biweekly" | "monthly" | "bimonthly" | "quarterly" | "quatrimesterly" | "semester" | "annually";
 //                   dia       quincena    mes        bimestre     trimestre    cuatrimestre   semestre           anual
-
-const inputData={
-    "id": 1,
-    "currency": "USD",
-    "vehicle_cost": 100000,
-    "initial_payment_percentage": 0.15,
-    "financing_percentage": 0.40,
-    "rate": {
-        "id": 1,
-      "rate_type": "EFFECTIVE",
-      "rate_period": "quarterly",
-      "rate_value": 0.2,
-      "capitalization_period": "quarterly"
-    },
-    "payment_frequency": "monthly",
-    "amount_of_fees": 36,
-    "cok_percentage": 0.5,
-    "gracePeriods": [
-        {
-            "id": 1,
-            "type": "TOTAL",
-            "value": 3,
-            "period_number": 1
-        },
-        {
-            "id": 2,
-            "type": "PARTIAL",
-            "value": 1,
-            "period_number": 2
-        }
-    ],
-    "grace_period": {
-        type: "TOTAL",
-        periods: [10,24,30]
-    }
-   }
 
 export const roundNumber = (n: number) => {
   return Math.round(n * 100) / 100;
 };
 
 export const validatePeriodType = (period: string) => {
-    if (period !== 'daily' && period !== 'biweekly' && period !== 'monthly' && period !== 'bimonthly' && period !== 'quarterly' && period !== 'quatrimesterly' && period !== 'semester' && period !== 'annually') throw new Error('Invalid period');
-    return period as PeriodType;
+    // reverse the logic to avoid the 'else' statement
+    if (period === 'null' || period === 'daily' || period === 'biweekly' || period === 'monthly' || period === 'bimonthly' || period === 'quarterly' || period === 'quatrimesterly' || period === 'semester' || period === 'annually') return period as PeriodType;
+    throw new Error("Invalid period");
 }
 
 export const getPeriodDays = (period: PeriodType) => {
     switch (period) {
+        case "null":
+        return 0;
         case "daily":
         return 1;
         case "biweekly":
@@ -120,18 +87,20 @@ export const calculatePaymentInstallments = (
   start_balance: number,
   amount_of_fees: number,
   effective_rate_by_payment_frequency: number,
-  gracePeriods: GracePeriod[],
+  gracePeriods: GracePeriod,
 ) => {
   // Initializa la data
   let initial_balance = start_balance;
   let final_balance = 0;
+  
+    console.log(gracePeriods)
 
-  //write a map for grace periods that returns objects like "2":"TOTAL"
-  // THIS WILL BE ARRAY
-  const gracePeriodsMap = gracePeriods.reduce((map, obj) => {
-    map[obj.period_number] = obj.type;
-    return map;
-  }, {});
+  let gracePeriodsMap = {};
+  for (let i = 0; i < gracePeriods.period_numbers.length; i++) {
+    gracePeriodsMap[gracePeriods.period_numbers[i]] = gracePeriods.type;
+  }
+
+  console.log(gracePeriodsMap)
 
   let results: PaymentInstallment[] = [];
 

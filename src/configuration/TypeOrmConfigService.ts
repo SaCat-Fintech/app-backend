@@ -1,6 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from "@nestjs/typeorm";
+import { FinancingResult } from "src/french-method/domain/entities/financing-results.entity";
+import { ProfitabilityIndicator } from "src/french-method/domain/entities/profitability-indicator.entity";
 import { GracePeriod } from "../french-method/domain/entities/grace-period.entity";
 import { InputData } from "../french-method/domain/entities/input-data.entity";
 import { PayRun } from "../french-method/domain/entities/pay-run.entity";
@@ -21,7 +23,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
             username: this.configService.get<string>('POSTGRES_USER'),
             password: this.configService.get<string>('POSTGRES_PASSWORD'),
             database: this.configService.get<string>('POSTGRES_DB'),
-            entities: [Role, User, UserProfile, InputData, PayRun, PaymentInstallment, Rate, GracePeriod],
+            entities: [Role, User, UserProfile, InputData, PayRun, PaymentInstallment, ProfitabilityIndicator, Rate, GracePeriod, FinancingResult],
             synchronize: true,
         }
     }

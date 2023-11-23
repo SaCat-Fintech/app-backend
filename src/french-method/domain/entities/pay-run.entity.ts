@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserProfile } from "../../../users/domain/entities/user-profile.entity";
+import { FinancingResult } from "./financing-results.entity";
 import { InputData } from "./input-data.entity";
 import { PaymentInstallment } from "./payment-installment.entity";
 import { ProfitabilityIndicator } from "./profitability-indicator.entity";
@@ -17,10 +18,13 @@ export class PayRun {
     @JoinColumn({ name: 'input_data_id' })
     inputData: InputData;
 
-    //TODO: add profitability indicator
-    /* @OneToOne(() => ProfitabilityIndicator)
-    @JoinColumn()
-    profitabilityIndicator: ProfitabilityIndicator; */
+    @OneToOne(() => ProfitabilityIndicator)
+    @JoinColumn({ name: 'profitability_indicator_id'})
+    profitabilityIndicator: ProfitabilityIndicator;
+
+    @OneToOne(() => FinancingResult)
+    @JoinColumn({ name: 'financing_result_id'})
+    financingResult: FinancingResult;
 
     @OneToMany(() => PaymentInstallment, paymentInstallment => paymentInstallment.payRun)
     paymentInstallments: PaymentInstallment[];

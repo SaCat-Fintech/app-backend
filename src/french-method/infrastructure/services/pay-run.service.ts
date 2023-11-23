@@ -8,6 +8,9 @@ import { PayRun } from "../../domain/entities/pay-run.entity";
 import { PaymentInstallment } from "../../domain/entities/payment-installment.entity";
 import { Rate } from "../../domain/entities/rate.entity";
 
+import { FinancingResult } from "src/french-method/domain/entities/financing-results.entity";
+import { GracePeriod } from "src/french-method/domain/entities/grace-period.entity";
+import { ProfitabilityIndicator } from "src/french-method/domain/entities/profitability-indicator.entity";
 import { calculateAnnualEffectiveRate, calculateDiscountRate, calculateEffectiveRateByPaymentFrequency, calculateFinancedBalanceInstallment, calculateInternalRateOfReturn, calculateNetPresentValue, calculatePaymentInstallments, getPeriodDays, roundNumber, validatePeriodType } from "src/french-method/utils/calculations.helper";
 
 @Injectable()
@@ -21,6 +24,12 @@ export class PayRunService {
         private readonly inputDataRepository: Repository<InputData>,
         @InjectRepository(Rate)
         private readonly rateRepository: Repository<Rate>,
+        @InjectRepository(ProfitabilityIndicator)
+        private readonly profitabilityIndicatorRepository: Repository<ProfitabilityIndicator>,
+        @InjectRepository(GracePeriod)
+        private readonly gracePeriodRepository: Repository<GracePeriod>,
+        @InjectRepository(FinancingResult)
+        private readonly financingResultRepository: Repository<FinancingResult>,
         private readonly userProfileService: UserProfileService,
     ) {}
 
@@ -54,29 +63,58 @@ export class PayRunService {
 
 
     async createPayRunWithInstallments(inputData: InputData, userId: number): Promise<PayRun> {
-        const userProfile = await this.userProfileService.findOne(userId);
 
-        const rate = this.rateRepository.create(inputData.rate);
-        await this.rateRepository.save(rate);
-        const input = this.inputDataRepository.create(inputData);
-        input.rate = rate;
-        await this.inputDataRepository.save(input);
+        try {
+            const userProfile = await this.userProfileService.findOne(userId);
 
-        let { payment_installments, rentability_results } = this.generateFrenchAmortizationSchedule(input)
+            const rate = this.rateRepository.create(inputData.rate);
+            await this.rateRepository.save(rate);
+            
 
-        const paymentInstallments = this.paymentInstallmentRepository.create(payment_installments);
-        await this.paymentInstallmentRepository.save(paymentInstallments);
-        const payRun = this.payRunRepository.create();
-        payRun.inputData = input;
-        payRun.paymentInstallments = paymentInstallments;
-        payRun.userProfile = userProfile;
-        //TODO: save rentability results
-        //payRun.profitabilityIndicator = rentability_results;
-        return await this.payRunRepository.save(payRun);
+            // Create and save the GracePeriod entity
+            const gracePeriod = this.gracePeriodRepository.create(inputData.gracePeriod);
+            await this.gracePeriodRepository.save(gracePeriod);
+            
+
+            const input = this.inputDataRepository.create(inputData);
+            input.rate = rate;
+            input.gracePeriod = gracePeriod;
+            
+
+            await this.inputDataRepository.save(input);
+            
+
+            let { payment_installments, profitability_indicator, financing_results } = this.generateFrenchAmortizationSchedule(input)
+            
+
+            const paymentInstallments = this.paymentInstallmentRepository.create(payment_installments);
+            await this.paymentInstallmentRepository.save(paymentInstallments);
+            
+
+            const profitabilityIndicator = this.profitabilityIndicatorRepository.create(profitability_indicator);
+            await this.profitabilityIndicatorRepository.save(profitabilityIndicator);
+
+            const financingResult = this.financingResultRepository.create(financing_results);
+            await this.financingResultRepository.save(financingResult);
+
+            const payRun = this.payRunRepository.create();
+            payRun.inputData = input;
+            payRun.paymentInstallments = paymentInstallments;
+            payRun.userProfile = userProfile;
+            payRun.profitabilityIndicator = profitabilityIndicator;
+            payRun.financingResult = financingResult;
+
+            return await this.payRunRepository.save(payRun);
+        } catch (error) {
+            throw new Error(error)
+        }
+
+        
     }
 
     private generateFrenchAmortizationSchedule(inputData: InputData) {
-        let { id, currency, vehicle_cost, initial_payment_percentage, financing_percentage, rate: {rate_type, rate_period, rate_value, capitalization_period}, payment_frequency, amount_of_fees, cok_percentage, gracePeriods } = inputData;
+
+        let { id, currency, vehicle_cost, initial_payment_percentage, financing_percentage, rate: {rate_type, rate_period, rate_value, capitalization_period}, payment_frequency, amount_of_fees, cok_percentage, gracePeriod } = inputData;
 
         id = +id;
         vehicle_cost = +vehicle_cost;
@@ -120,7 +158,7 @@ export class PayRunService {
 
         // french amortization schedule
 
-        const payment_installments = calculatePaymentInstallments(financed_balance_with_installment, amount_of_fees, effective_rate_by_payment_frequency, gracePeriods);
+        const payment_installments = calculatePaymentInstallments(financed_balance_with_installment, amount_of_fees, effective_rate_by_payment_frequency, gracePeriod);
 
         // some util results
         
@@ -137,8 +175,19 @@ export class PayRunService {
         const net_present_value = calculateNetPresentValue(lease_amount, discount_rate, installment_values_array);
 
         return {
+            financing_results: {
+                final_fee: final_fee,
+                number_of_years: number_of_years,
+                annual_effective_rate: annual_effective_rate,
+                effective_rate_by_payment_frequency: effective_rate_by_payment_frequency,
+                rates_per_year: rates_per_year,
+                initial_fee_ammount: initial_fee_ammount,
+                final_fee_ammount: final_fee_ammount,
+                lease_amount: lease_amount,
+                financed_balance_with_installment: financed_balance_with_installment
+            },
             payment_installments: payment_installments,
-            rentability_results: {
+            profitability_indicator: {
                 discount_rate: discount_rate,
                 internal_rate_of_return: internal_rate_of_return,
                 annual_effective_cost_rate: annual_effective_cost_rate,
@@ -149,14 +198,11 @@ export class PayRunService {
 
     // async findDetail(id: number): Promise<PayRun> {
     async findDetail(id: number): Promise<any> {
-        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'paymentInstallments']});
+        const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'inputData.rate', 'paymentInstallments', 'profitabilityIndicator']});
 
         if (!payRun) {
             throw new NotFoundException(`The pay run with ID ${id} was not found.`);
         }
-        return {
-            ...payRun,
-            profitabilityIndicator: null
-        };
+        return payRun;
     }
 }

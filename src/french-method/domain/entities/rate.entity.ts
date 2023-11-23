@@ -9,16 +9,16 @@ export class Rate {
   @ApiProperty({ enum: ["EFFECTIVE", "NOMINAL"] })
   @Column({ type: "varchar", length: 32, nullable: false })
   rate_type: string;
-  // TODO CORRECT: { name: "Annual" }, { name: "Semester" }, { name: "Quatrimesterly" }, { name: "Quarterly" }, { name: "Bimonthly" }, { name: "Monthly" }, { name: "Fortnightly" }, { name: "Diary" },
-  // OPTIONAL: effective -> none, nominal -> yessss
-  @ApiProperty({ enum: ["monthly", "quarterly", "semi-annually", "annually"] })
+  
+  @ApiProperty({ enum: ["daily", "biweekly", "monthly", "bimonthly", "quarterly", "quatrimesterly", "semester", "annually"] })
   @Column({ type: "varchar", length: 32, nullable: false })
   rate_period: string;
+  
   @ApiProperty()
   @Column({ type: "decimal", precision: 10, scale: 4, nullable: false })
   rate_value: number;
-  // TODO CORRECT: { name: "Annual" }, { name: "Semester" }, { name: "Quatrimesterly" }, { name: "Quarterly" }, { name: "Bimonthly" }, { name: "Monthly" }, { name: "Fortnightly" }, { name: "Diary" },
-  @ApiProperty({ enum: ["monthly", "quarterly", "semi-annually", "annually"] })
+  
+  @ApiProperty({ enum: ["daily", "biweekly", "monthly", "bimonthly", "quarterly", "quatrimesterly", "semester", "annually"] })
   @Column({ type: "varchar", length: 32, nullable: true })
-  capitalization_period: string;
+  capitalization_period?: string | null;
 }
