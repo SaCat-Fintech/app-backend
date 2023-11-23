@@ -1,12 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { ApiProperty } from "@nestjs/swagger";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: "rates" })
 export class Rate {
   @PrimaryGeneratedColumn()
   id: number;
   // TODO CORRECT: effective, nominal
-  @ApiProperty({ enum: ["TEA", "TNA"] })
+  @ApiProperty({ enum: ["EFFECTIVE", "NOMINAL"] })
   @Column({ type: "varchar", length: 32, nullable: false })
   rate_type: string;
   // TODO CORRECT: { name: "Annual" }, { name: "Semester" }, { name: "Quatrimesterly" }, { name: "Quarterly" }, { name: "Bimonthly" }, { name: "Monthly" }, { name: "Fortnightly" }, { name: "Diary" },

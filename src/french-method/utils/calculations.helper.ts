@@ -2,8 +2,9 @@ import { IRR, NPV } from "@formulajs/formulajs";
 import { GracePeriod } from "../domain/entities/grace-period.entity";
 import { PaymentInstallment } from "../domain/entities/payment-installment.entity";
 
-type RateType = "TEA" | "TNA";
-type PeriodType = "monthly" | "quarterly" | "semi-annually" | "annually";
+type RateType = "EFFECTIVE" | "NOMINAL";
+type PeriodType = "daily" | "biweekly" | "monthly" | "bimonthly" | "quarterly" | "quatrimesterly" | "semester" | "annually";
+//                   dia       quincena    mes        bimestre     trimestre    cuatrimestre   semestre           anual
 
 const inputData={
     "id": 1,
@@ -13,7 +14,7 @@ const inputData={
     "financing_percentage": 0.40,
     "rate": {
         "id": 1,
-      "rate_type": "TEA",
+      "rate_type": "EFFECTIVE",
       "rate_period": "quarterly",
       "rate_value": 0.2,
       "capitalization_period": "quarterly"
@@ -45,17 +46,32 @@ export const roundNumber = (n: number) => {
   return Math.round(n * 100) / 100;
 };
 
+export const validatePeriodType = (period: string) => {
+    if (period !== 'daily' && period !== 'biweekly' && period !== 'monthly' && period !== 'bimonthly' && period !== 'quarterly' && period !== 'quatrimesterly' && period !== 'semester' && period !== 'annually') throw new Error('Invalid period');
+    return period as PeriodType;
+}
+
 export const getPeriodDays = (period: PeriodType) => {
-  switch (period) {
-    case "monthly":
-      return 30;
-    case "quarterly":
-      return 90;
-    case "semi-annually":
-      return 180;
-    case "annually":
-      return 360;
-  }
+    switch (period) {
+        case "daily":
+        return 1;
+        case "biweekly":
+        return 15;
+        case "monthly":
+        return 30;
+        case "bimonthly":
+        return 60;
+        case "quarterly":
+        return 90;
+        case "quatrimesterly":
+        return 120;
+        case "semester":
+        return 180;
+        case "annually":
+        return 360;
+        default:
+        throw new Error("Invalid period");
+    }
 };
 
 
@@ -64,8 +80,8 @@ export const calculateAnnualEffectiveRate = (rate_type: RateType, rate_value: nu
 
     let result = 0;
     
-    if (rate_type === 'TNA') { //change this to EFFECTIVE, NOMINAL
-        result = Math.pow(1 + (rate_value / (rate_period_days / capitalization_period_days)) / (days_per_year / capitalization_period_days), days_per_year / capitalization_period_days) - 1;
+    if (rate_type === 'NOMINAL') { //change this to EFFECTIVE, NOMINAL
+        result = Math.pow(1 + (rate_value / (rate_period_days / capitalization_period_days)), days_per_year / capitalization_period_days) - 1;
     } else {
         result = Math.pow(1 + rate_value, 360 / rate_period_days) - 1;
     }
@@ -203,15 +219,11 @@ export const calculateNetPresentValue = (
   installment_values_array: number[],
 ) => {
   // we use the 'Net Present Value' function from the formulajs library since we cant implement it ourselves
-  console.log("discount_rate", discount_rate);
-  console.log("installment_values_array", installment_values_array);
   let npv = NPV(discount_rate, installment_values_array);
 
   if (npv instanceof Error) {
     throw new Error("Error calculating net present value");
   }
-
-  console.log("npv", npv);
 
   return lease_amount + npv;
 };

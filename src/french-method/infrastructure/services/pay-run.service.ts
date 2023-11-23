@@ -8,7 +8,7 @@ import { PayRun } from "../../domain/entities/pay-run.entity";
 import { PaymentInstallment } from "../../domain/entities/payment-installment.entity";
 import { Rate } from "../../domain/entities/rate.entity";
 
-import { calculateAnnualEffectiveRate, calculateDiscountRate, calculateEffectiveRateByPaymentFrequency, calculateFinancedBalanceInstallment, calculateInternalRateOfReturn, calculateNetPresentValue, calculatePaymentInstallments, getPeriodDays, roundNumber } from "src/french-method/utils/calculations.helper";
+import { calculateAnnualEffectiveRate, calculateDiscountRate, calculateEffectiveRateByPaymentFrequency, calculateFinancedBalanceInstallment, calculateInternalRateOfReturn, calculateNetPresentValue, calculatePaymentInstallments, getPeriodDays, roundNumber, validatePeriodType } from "src/french-method/utils/calculations.helper";
 
 @Injectable()
 export class PayRunService {
@@ -54,7 +54,6 @@ export class PayRunService {
 
 
     async createPayRunWithInstallments(inputData: InputData, userId: number): Promise<PayRun> {
-        console.log('create', inputData)
         const userProfile = await this.userProfileService.findOne(userId);
 
         const rate = this.rateRepository.create(inputData.rate);
@@ -89,15 +88,15 @@ export class PayRunService {
 
 
         // validations
-        if (rate_type !== 'TEA' && rate_type !== 'TNA') throw new Error('Invalid rate type');
-        if (capitalization_period !== 'monthly' && capitalization_period !== 'quarterly' && capitalization_period !== 'semi-annually' && capitalization_period !== 'annually') throw new Error('Invalid capitalization period');
-        if (payment_frequency !== 'monthly' && payment_frequency !== 'quarterly' && payment_frequency !== 'semi-annually' && payment_frequency !== 'annually') throw new Error('Invalid payment frequency');
-        if (rate_period !== 'monthly' && rate_period !== 'quarterly' && rate_period !== 'semi-annually' && rate_period !== 'annually') throw new Error('Invalid rate period');
+        if (rate_type !== 'EFFECTIVE' && rate_type !== 'NOMINAL') throw new Error('Invalid rate type');
+        let capitalization_period_v = validatePeriodType(capitalization_period);
+        let payment_frequency_v = validatePeriodType(payment_frequency);
+        let rate_period_v = validatePeriodType(rate_period);
 
         // necessary variables
-        const capitalization_period_days = getPeriodDays(capitalization_period);
-        const payment_frequency_days = getPeriodDays(payment_frequency);
-        const rate_period_days = getPeriodDays(rate_period);
+        const capitalization_period_days = getPeriodDays(capitalization_period_v);
+        const payment_frequency_days = getPeriodDays(payment_frequency_v);
+        const rate_period_days = getPeriodDays(rate_period_v);
 
         const days_per_year = 360;
 
@@ -152,23 +151,12 @@ export class PayRunService {
     async findDetail(id: number): Promise<any> {
         const payRun = await this.payRunRepository.findOne({where: {id}, relations: ['inputData', 'paymentInstallments']});
 
-        //TODO: remove this when the profitabilty indicator is saved in the database
-        const { inputData } = payRun;
-        const rate = await this.rateRepository.findOne({where: {id: 3}});
-        inputData.rate = rate;
-
-        console.log(inputData)
-        
-        const results = this.generateFrenchAmortizationSchedule(inputData);
-        
-
-
         if (!payRun) {
             throw new NotFoundException(`The pay run with ID ${id} was not found.`);
         }
         return {
             ...payRun,
-            profitabilityIndicator: results.rentability_results
+            profitabilityIndicator: null
         };
     }
 }

@@ -52,7 +52,6 @@ export class UserProfileService {
 
             return await this.userProfileRepository.save(newProfile);
         } catch (error) {
-            console.log(error)
             if (error instanceof NotFoundException) {
                 throw new NotFoundException('Usuario no encontrado');
             } else if (error instanceof BadRequestException) {
