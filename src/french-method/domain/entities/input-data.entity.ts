@@ -1,0 +1,57 @@
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { GracePeriod } from "./grace-period.entity";
+import { Rate } from "./rate.entity";
+
+@Entity({ name: "input-data" })
+export class InputData {
+  @ApiProperty()
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ApiProperty({ enum: ["USD", "PEN"] }) // Only dollars and soles
+  @Column({ type: "varchar", length: 32, nullable: false })
+  currency: string;
+
+  @ApiProperty()
+  @Column({ type: "decimal", precision: 10, scale: 4, nullable: false })
+  vehicle_cost: number;
+
+  @ApiProperty()
+  @Column({ type: "decimal", precision: 10, scale: 4, nullable: false })
+  initial_payment_percentage: number;
+
+  @ApiProperty()
+  @Column({ type: "decimal", precision: 10, scale: 4, nullable: false })
+  financing_percentage: number;
+
+  @ApiProperty()
+  @OneToOne(() => Rate)
+  @JoinColumn({ name: "rate_id" })
+  rate: Rate;
+
+  @ApiProperty({ enum: ["monthly", "quarterly", "semi-annually", "annual"] })
+  @Column({ type: "varchar", length: 32, nullable: false })
+  payment_frequency: string;
+
+  @ApiProperty({ enum: [24, 36] })
+  @Column({ type: "int", nullable: false })
+  amount_of_fees: number;
+
+  @ApiProperty()
+  @Column({ type: "decimal", precision: 10, scale: 4, nullable: false })
+  cok_percentage: number;
+
+  @ApiProperty({ type: () => GracePeriod })
+  @OneToOne(() => GracePeriod, gracePeriod => gracePeriod.inputData)
+  @JoinColumn({ name: "grace_period_id" })
+  gracePeriod: GracePeriod;
+
+}
